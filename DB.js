@@ -4,9 +4,7 @@ import _ from "lodash"
 import Faker from 'faker'
 import moment from "moment"
 const {sequelize} = models
-
 const Person = sequelize.define("Person",{
-
 	firstName:{
 		type:Sequelize.STRING,
 		AllowNull:false
@@ -27,9 +25,7 @@ const Person = sequelize.define("Person",{
 		AllowNull:false
 	}
 })
-
 const Post = sequelize.define("Post",{
-
 	title:{
 		type:Sequelize.STRING,
 		AllowNull:false
@@ -42,7 +38,6 @@ const Post = sequelize.define("Post",{
 		type:Sequelize.BIGINT
 	}
 })
-
 const Info=sequelize.define("Info",{
 
 	gender:{
@@ -53,18 +48,12 @@ const Info=sequelize.define("Info",{
 		type:Sequelize.STRING,
 		AllowNull:false
 	}
-
-
-
 })
-
 Person.hasMany(Post);
 Post.belongsTo(Person);
 Person.hasOne(Info)
 Info.belongsTo(Person)
-
 export default sequelize;
-
 /*sequelize.sync({force:true}).then(()=>{
 	_.times(10,function(){
 		return Person.create({

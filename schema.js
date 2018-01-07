@@ -5,11 +5,8 @@ import {
   GraphQLString,
   GraphQLList,
   GraphQLInt
-
 } from 'graphql'
-
 import DB from "./DB.js";
-
 var Person = new GraphQLObjectType({
     name:"Person",
     description:"Person",
@@ -32,20 +29,17 @@ var Person = new GraphQLObjectType({
 	            resolve(person){
 	                return person.email
 	            }   
-
 	        },
 	        avatar:{
 	            type:GraphQLString,
 	            resolve(person){
 	                return person.avatar
 	            }   
-
 	        },
 	        posts:{
 	            type:new GraphQLList(Post),
 	            resolve(person){
 	              return person.getPosts()
-	                
 	            }
 	        },
 	        info:{
@@ -58,14 +52,11 @@ var Person = new GraphQLObjectType({
 
     }
 })
-
 var Post= new GraphQLObjectType({
     name:"Post",
     description:"post",
-
     fields:()=>{
     	return {
-
 	        title:{
 	            type:GraphQLString,
 	            resolve(post){
@@ -91,11 +82,8 @@ var Post= new GraphQLObjectType({
 	        	}
 	        }
    		}
-
     }
 })
-
-
 var Info  =new GraphQLObjectType({
 	name:"Info",
 	description:"info",
@@ -103,33 +91,25 @@ var Info  =new GraphQLObjectType({
 		return {
 			address:{
 				type:GraphQLString,
-
 				resolve(info){
-
 					return info.address
 				}
 			},
 			gender:{
 				type:GraphQLInt,
 				resolve(info){
-
 					return info.gender
 				}
 			},
 			author:{
-
 				type:Person,
 				resolve(info){
-
 					return info.getPerson();
 				}
 			}
-
 		}
 	}
-
 })
-
 var  Query = new GraphQLObjectType({
     name:"rootQuery",
     description:"rootQuery",
@@ -145,7 +125,6 @@ var  Query = new GraphQLObjectType({
             resolve(root,args){
                 return DB.models.Post.findAll(({where:args}))
             }
-
         },
         infos:{
         	type:new GraphQLList(Info),
@@ -155,8 +134,6 @@ var  Query = new GraphQLObjectType({
         }
     }
 })
-
  export default new GraphQLSchema({
      query:Query
-
 })

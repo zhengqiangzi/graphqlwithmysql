@@ -54,7 +54,7 @@ Post.belongsTo(Person);
 Person.hasOne(Info)
 Info.belongsTo(Person)
 export default sequelize;
-sequelize.sync({force:true}).then(()=>{
+/*sequelize.sync({force:true}).then(()=>{
 	_.times(10,function(){
 		return Person.create({
 			firstName:Faker.name.firstName(),
@@ -79,3 +79,4 @@ sequelize.sync({force:true}).then(()=>{
 		})
 	})
 })
+*/

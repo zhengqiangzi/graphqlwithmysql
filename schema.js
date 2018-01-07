@@ -127,6 +127,10 @@ var  Query = new GraphQLObjectType({
 			args:{
 				id:{
 					type:GraphQLInt
+				},
+				email:{
+
+					type:GraphQLString
 				}
 
 			},
@@ -154,6 +158,15 @@ var  Query = new GraphQLObjectType({
         infos:{
         	type:new GraphQLList(Info),
         	resolve(root,args){
+
+        		/*console.log('***************************************************************')
+        		DB.models.Info.findAndCountAll().then((_data)=>{
+
+        				console.log(_data)
+
+        		})
+
+        		console.log('***************************************************************')*/
         		return DB.models.Info.findAll({where:args})
         	}
         }

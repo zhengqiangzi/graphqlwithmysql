@@ -4,7 +4,8 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLList,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLNonNull
 } from 'graphql'
 import DB from "./DB.js";
 var Person = new GraphQLObjectType({
@@ -12,6 +13,13 @@ var Person = new GraphQLObjectType({
     description:"Person",
     fields:()=>{
     	return {
+			id:{
+				type:GraphQLInt,
+				resolve(person){
+
+					return person.id
+				}
+			},
 	        firstName:{
 	            type:GraphQLString,
 	            resolve(person){
@@ -116,10 +124,27 @@ var  Query = new GraphQLObjectType({
     fields:{
         person:{
             type:new GraphQLList(Person),
+			args:{
+				id:{
+					type:GraphQLInt
+				}
+
+			},
             resolve(root,args){
                 return DB.models.Person.findAll({where:args})
             }
         },
+		onePerson:{
+			type:Person,
+			args:{
+				id:{
+					type:new GraphQLNonNull(GraphQLInt)
+				}
+			},
+			resolve(_,args){
+                return DB.models.Person.findByPrimary(args.id)
+			}
+		},
         posts:{
             type:new GraphQLList(Post),
             resolve(root,args){

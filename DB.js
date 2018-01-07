@@ -54,7 +54,7 @@ Post.belongsTo(Person);
 Person.hasOne(Info)
 Info.belongsTo(Person)
 export default sequelize;
-/*sequelize.sync({force:true}).then(()=>{
+sequelize.sync({force:true}).then(()=>{
 	_.times(10,function(){
 		return Person.create({
 			firstName:Faker.name.firstName(),
@@ -63,19 +63,19 @@ export default sequelize;
 			avatar:Faker.image.avatar(),
 
 		}).then((person)=>{
-			
+
 			person.createInfo({
 				gender:Math.random()>0.5,
 				address:Faker.address.streetAddress()
 			})
-			person.createPost({
-				title:`this is title for ${person.firstName}`,
-				content:`this is content for ${person.firstName}`,
-				publishTime:moment().valueOf()
+			_.times(Math.ceil(Math.random()*10),function(){
+				person.createPost({
+					title:`this is title for ${person.firstName}`,
+					content:`this is content for ${person.firstName}`,
+					publishTime:moment().valueOf()
 
+				})
 			})
-
 		})
 	})
 })
-*/

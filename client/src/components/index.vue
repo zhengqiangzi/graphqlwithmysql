@@ -58,7 +58,7 @@
         apollo:{
              $subscribe:{
                 person:{
-                     query: gql`query($pindex:Int!,$psize:Int){person(pindex:$pindex,psize:$psize) {
+                     query: gql`query($pindex:Int=1,$psize:Int=10){person(pindex:$pindex,psize:$psize) {
                         id
                         firstName
                         lastName

@@ -29,7 +29,7 @@ const apolloProvider = new VueApollo({
  
 Vue.config.productionTip = false
 
-Vue.config.optionMergeStrategies.madhouse=function(parent,child,vm,key){
+/*Vue.config.optionMergeStrategies.madhouse=function(parent,child,vm,key){
 
   console.log('*******************************************')
   console.log(parent)
@@ -38,7 +38,7 @@ Vue.config.optionMergeStrategies.madhouse=function(parent,child,vm,key){
   console.log(key)
   console.log('*******************************************')
   return parent
-}
+}*/
 
 /* const Father  = {
 
@@ -65,7 +65,7 @@ const Child = {
       console.log('_)_______________________________________________________________________')
     }
 } */
-const Child2 = new Vue({
+/*const Child2 = new Vue({
     template:"<div>{{a}}</div>",
     data:function(){
       return {a:2}
@@ -79,7 +79,7 @@ const Child2 = new Vue({
       }
     },
     madhouse:3
-}).$mount("#app")
+}).$mount("#app")*/
 
 
 
@@ -135,7 +135,7 @@ const Child2 = new Vue({
 
 
 
-/* 
+
 new Vue({
   el: '#app',
   router,
@@ -143,4 +143,4 @@ new Vue({
   template: '<App/>',
   components: { App }
 })
- */
+ 

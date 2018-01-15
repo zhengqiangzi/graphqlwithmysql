@@ -134,6 +134,9 @@ var  Query = new GraphQLObjectType({
 				}
 			},
             resolve(root,args){
+				args.pindex = args.pindex ? args.pindex : 1;
+				args.psize = args.psize ? args.psize : 1;
+
                 return DB.models.Person.findAll({limit:args.psize,offset:(args.pindex-1)*args.psize})
             }
 		},
@@ -225,16 +228,29 @@ var mutations=new GraphQLObjectType({
 
 						return person
 					})
-
-
 				}
-
 			}
 		}
 	}
 })
 
+
+var Subscription  = new GraphQLObjectType({
+	name:"subscription",
+	directives:"this is subscription",
+	fields:()=>{
+		return {
+			personAdded:{
+				type:Person,
+			}
+		}
+
+	}
+
+})
  export default new GraphQLSchema({
 	 query:Query,
-	 mutation:mutations
+	 mutation:mutations,
+	subscription: Subscription
+	
 })

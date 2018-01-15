@@ -5,9 +5,11 @@ import {
   GraphQLString,
   GraphQLList,
   GraphQLInt,
-  GraphQLNonNull
+  GraphQLNonNull,
+	GraphQLBoolean
 } from 'graphql'
 import DB from "./DB.js";
+import Faker from "faker";
 var Person = new GraphQLObjectType({
     name:"Person",
     description:"Person",
@@ -16,7 +18,6 @@ var Person = new GraphQLObjectType({
 			id:{
 				type:GraphQLInt,
 				resolve(person){
-
 					return person.id
 				}
 			},
@@ -125,19 +126,25 @@ var  Query = new GraphQLObjectType({
         person:{
             type:new GraphQLList(Person),
 			args:{
-				id:{
+				pindex:{
 					type:GraphQLInt
 				},
-				email:{
-
-					type:GraphQLString
+				psize:{
+					type:GraphQLInt
 				}
-
 			},
             resolve(root,args){
-                return DB.models.Person.findAll({where:args})
+                return DB.models.Person.findAll({limit:args.psize,offset:(args.pindex-1)*args.psize})
             }
-        },
+		},
+		personCount:{
+			type:GraphQLInt,
+			resolve(_,args){
+				return DB.models.Person.findAndCountAll().then((_data)=>{
+					return _data.count
+				})
+			}
+		},
 		onePerson:{
 			type:Person,
 			args:{
@@ -158,20 +165,76 @@ var  Query = new GraphQLObjectType({
         infos:{
         	type:new GraphQLList(Info),
         	resolve(root,args){
-
-        		/*console.log('***************************************************************')
-        		DB.models.Info.findAndCountAll().then((_data)=>{
-
-        				console.log(_data)
-
-        		})
-
-        		console.log('***************************************************************')*/
         		return DB.models.Info.findAll({where:args})
         	}
         }
     }
 })
+
+var mutations=new GraphQLObjectType({
+	name:"mutation",
+	description:"this is mutation",
+	fields:()=>{
+		return {
+			addPerson:{
+				type:Person,
+				args:{
+					firstName:{
+						type:new GraphQLNonNull(GraphQLString)
+					},
+					lastName:{
+						type: new GraphQLNonNull(GraphQLString)
+					},
+					email:{
+						type: new GraphQLNonNull(GraphQLString)
+					},
+					avatar:{
+						type: GraphQLString
+					},
+					gender:{
+						type:GraphQLBoolean
+					},
+					address:{
+						type:GraphQLString
+					}
+				},
+				resolve(root,args){
+					return DB.models.Person.create({
+						firstName:args.firstName,
+						lastName:args.lastName,
+						email:args.email,
+						avatar:Faker.image.avatar()
+						
+					}).then((person)=>{
+						return person.createInfo({
+							gender:args.gender,
+							address:args.address
+						})
+					})
+				}
+			},
+			deletePerson:{
+				type:GraphQLBoolean,
+				args:{
+					id:{
+						type:new GraphQLNonNull(GraphQLInt)
+					}
+				},
+				resolve(root,args){
+					return DB.models.Person.destroy({ where: args, force: true, cascade:true}).then((person)=>{
+
+						return person
+					})
+
+
+				}
+
+			}
+		}
+	}
+})
+
  export default new GraphQLSchema({
-     query:Query
+	 query:Query,
+	 mutation:mutations
 })

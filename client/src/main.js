@@ -28,7 +28,114 @@ const apolloProvider = new VueApollo({
 })
  
 Vue.config.productionTip = false
-/* eslint-disable no-new */
+
+Vue.config.optionMergeStrategies.madhouse=function(parent,child,vm,key){
+
+  console.log('*******************************************')
+  console.log(parent)
+  console.log(child)
+  console.log(vm)
+  console.log(key)
+  console.log('*******************************************')
+  return parent
+}
+
+/* const Father  = {
+
+    template:"<div>123</div>",
+    data:function(){
+      return {
+      }
+    },
+    madhouse:1
+}
+
+const Child = {
+    template:"<my-component></my-component>",
+    data:function(){
+      return {}
+    },
+    components:{
+      "my-component":Father
+    },
+    madhouse:2,
+    mounted:function(){
+      console.log('_)_______________________________________________________________________')
+      console.log(this)
+      console.log('_)_______________________________________________________________________')
+    }
+} */
+const Child2 = new Vue({
+    template:"<div>{{a}}</div>",
+    data:function(){
+      return {a:2}
+    },
+    extends:{
+      madhouse:1,
+      data:function(){
+        return {
+          a:1
+        }
+      }
+    },
+    madhouse:3
+}).$mount("#app")
+
+
+
+
+
+
+
+
+
+
+ /*new Vue({
+  render:function(createElement){
+
+    return createElement("child","123123")
+
+  },
+  data:function(){
+    return {
+
+    }
+  },
+  madhouse:{
+
+    id:1
+  },
+  components:{
+
+    child:{
+      render: function (createElement) {
+
+        return createElement("div",4444)
+
+      },
+        data:function(){
+          return {
+
+          }
+        },
+        madhouse:{
+          id:2
+        }
+
+    }
+
+  }
+}).$mount("#app")*/
+
+
+
+
+
+
+
+
+
+/* 
 new Vue({
   el: '#app',
   router,
@@ -36,3 +143,4 @@ new Vue({
   template: '<App/>',
   components: { App }
 })
+ */

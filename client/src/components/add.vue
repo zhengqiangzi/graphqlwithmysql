@@ -29,6 +29,7 @@
 
 <script>
 import Faker from 'faker'
+import gql from "graphql-tag"
     export default {
         data:function(){
             return {
@@ -43,6 +44,30 @@ import Faker from 'faker'
         },
         methods:{
             onSubmit:function(){
+                this.$apollo.mutate(
+                    {
+                        mutation:gql`mutation($firstName:String!,$lastName:String!,$email:String!,$avatar:String,$gender:Boolean!,$address:String!){
+                                addPerson(firstName:$firstName,lastName:$lastName,email:$email,avatar:$avatar,gender:$gender,address:$address){
+                                    firstName,
+                                    lastName,
+                                    email
+                                    avatar
+                                }
+                                }`,
+                        variables:{
+                            firstName:this.form.firstName,
+                            lastName:this.form.lastName,
+                            email:this.form.email,
+                            avatar:Faker.image.avatar(),
+                            gender:this.form.gender,
+                            address:this.form.address
+                        }
+                        
+
+                }).then((data)=>{
+
+                    this.$router.push({path:"/"})
+                })
             }
         }
     }

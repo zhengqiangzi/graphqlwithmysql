@@ -20,8 +20,34 @@
                 prop="email"
                 label="email">
             </el-table-column>
-        </el-table>
 
+            <el-table-column
+                prop="avatar"
+                label="avatar">
+                <template slot-scope="scope">
+                    <img :src="scope.row.avatar" style="width:60px;height:60px"/>
+                </template>
+
+            </el-table-column>
+
+            <el-table-column
+                prop=null
+                label="OPERATION">
+                <template slot-scope="scope">
+                    <a href="javascript:void(0)" @click.stop.prevent="deleteHandler(scope.row)">Delete</a> / 
+                    <a href="javascript:void(0)" @click.stop.prevent="editHandler(scope.row)">Edit</a>
+                </template>
+            </el-table-column>
+
+
+        </el-table>
+        <el-pagination
+            layout="prev, pager, next"
+            :total="ptotal"
+            :page-size="5"
+              @current-change="handleCurrentChange"
+        >
+        </el-pagination>
     </div>
     
 </template>
@@ -30,22 +56,73 @@
     import gql from 'graphql-tag'
     export default {
         apollo:{
-            person:gql`  {person {
-                id
-                firstName
-                lastName
-                email
-            }}`
+             $subscribe:{
+                person:{
+                     query: gql`query($pindex:Int!,$psize:Int){person(pindex:$pindex,psize:$psize) {
+                        id
+                        firstName
+                        lastName
+                        email
+                        avatar
+                    }}`,
+                    variables(){
+                        return {
+                            pindex:this.pindex,
+                            psize:5
+                        }
+                    },
+                    result:function({data}){
+                        this.person=data.person
+                    }
+                },
+                deletePerson:{
+                    query:gql`mutation($id:Int!){
+                                deletePerson(id:$id)
+                            }`,
+                    variables(){
+                        return {id:this.did}
+                    },
+                    result:function({data}){
+                       this.$apollo.subscriptions.person.refresh()
+
+                    }
+                },
+                personCount:{
+                    query:gql`{personCount}`,
+                    result:function({data}){
+                      this.ptotal = data.personCount
+
+                    }
+                }
+            },
         },
         data:function(){
-
             return {
+                person:[],
+                did:null,
+                pindex:1,
+                ptotal:0
             }
         },
         methods:{
             themesHandler:function(item){
-             this.$router.push({path:`/themes/${item.id}`})
+                this.$router.push({path:`/themes/${item.id}`})
+            },
+            deleteHandler:function(item){
+                this.did=item.id
+            },
+            handleCurrentChange:function(pindex){
+                this.pindex=pindex;
+            },
+            editHandler:function(item){
+                
+                this.$router.push({path:`/edit/${item.id}`})
+
             }
+        },
+        mounted:function(){
+
+            console.log(this)
         }
     }
 </script>

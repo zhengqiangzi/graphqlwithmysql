@@ -49,12 +49,15 @@ const Info=sequelize.define("Info",{
 		AllowNull:false
 	}
 })
-Person.hasMany(Post);
+Person.hasMany(Post, { onDelete:"CASCADE"});
 Post.belongsTo(Person);
-Person.hasOne(Info)
+
+
+Person.hasOne(Info, { onDelete: "CASCADE" })
 Info.belongsTo(Person)
 export default sequelize;
-/*sequelize.sync({force:true}).then(()=>{
+/* 
+ sequelize.sync({force:true}).then(()=>{
 	_.times(10,function(){
 		return Person.create({
 			firstName:Faker.name.firstName(),
@@ -78,5 +81,5 @@ export default sequelize;
 			})
 		})
 	})
-})
-*/
+}) */
+  

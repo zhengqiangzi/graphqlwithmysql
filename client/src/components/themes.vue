@@ -1,15 +1,18 @@
 <template>
     <div>
       
+        <router-link class="el-button el-button--primary" to="/" tag="el-button">返回</router-link>
 
         <el-card class="box-card">
+
             <div slot="header" class="clearfix">
                 <h3> Information <i>{{onePerson.lastName}}.{{onePerson.firstName}}</i></h3>
+
+                <img :src="onePerson.avatar"/>
             </div>
 
+            <div class="card-item"><label><b>Name:</b></label>{{onePerson.lastName}}.{{onePerson.firstName}}</div>
             <div class="card-item"><label><b>Email:</b></label>{{onePerson.email}}</div>
-            <div class="card-item"><label><b>firstName:</b></label>{{onePerson.firstName}}</div>
-            <div class="card-item"><label><b>lastName:</b></label>{{onePerson.lastName}}</div>
             <div  class="card-item"><label><b>Gender:</b></label>{{onePerson.info.gender==0?"male":"famle"}}</div>
             <div  class="card-item"><label><b>address:</b></label>{{onePerson.info.address}}</div>
         </el-card>
@@ -27,6 +30,7 @@
 
 
         </el-card>
+
 
     </div>
 </template>

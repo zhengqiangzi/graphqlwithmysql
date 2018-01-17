@@ -10,6 +10,10 @@ import {
 } from 'graphql'
 import DB from "./DB.js";
 import Faker from "faker";
+
+import { PubSub } from 'graphql-subscriptions';
+var pubsub = new PubSub();
+
 var Person = new GraphQLObjectType({
     name:"Person",
     description:"Person",
@@ -202,6 +206,7 @@ var mutations=new GraphQLObjectType({
 					}
 				},
 				resolve(root,args){
+
 					return DB.models.Person.create({
 						firstName:args.firstName,
 						lastName:args.lastName,
@@ -213,8 +218,10 @@ var mutations=new GraphQLObjectType({
 							gender:args.gender,
 							address:args.address
 						})
+						pubsub.publish("personAdded")
+						
 					})
-				}
+				},
 			},
 			deletePerson:{
 				type:GraphQLBoolean,
@@ -241,10 +248,17 @@ var Subscription  = new GraphQLObjectType({
 	fields:()=>{
 		return {
 			personAdded:{
-				type:Person,
-			}
+				type:GraphQLInt,
+			}	
 		}
+	},
+	resolve:(payload)=>{
 
+		return 123
+	},
+	subscribe:()=>{
+
+		return pubsub.asyncIterator("personAdded")
 	}
 
 })

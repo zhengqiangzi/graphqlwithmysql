@@ -1,41 +1,99 @@
-import express from 'express';
-import {
-  graphqlExpress,
-  graphiqlExpress,
-} from 'apollo-server-express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import { execute, subscribe } from 'graphql';
-import { createServer } from 'http';
-import { SubscriptionServer } from 'subscriptions-transport-ws';
+const express = require('express');
+const bodyParser = require('body-parser');
+const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
+const { makeExecutableSchema } = require('graphql-tools');
 
-import  schema  from './schema';
+import _ from "lodash";
 
-const PORT = 3000;
-const server = express();
+// Some fake data
+const books = [
+  {
+    id:1,
+    title: "Harry Potter and the Sorcerer's stone",
+    author: 'J.K. Rowling',
+  },
+  {
+    id:2,
+    title: 'Jurassic Park',
+    author: 'Michael Crichton',
+  },
+];
 
-server.use('*', cors({ origin: `http://localhost:${PORT}` }));
+const messages=[
+    {id:3,bid:1,content:"this is good books"},
+    {id:4,bid:2,content:"this is good books2"}
+]
+// The GraphQL schema in string form
+const typeDefs = `
+  type Book {
+    id:Int
+    title:String
+    author:String
+    msg:Msg
+  }
+  type Msg {
+    content:String
+    id:Int
+  }
+  type Query {
+      book(id:Int!): Book,
+   }
+`;
+// The resolvers
+const resolvers = {
+  Query: { 
+    book:function(_book,{id}){
 
-server.use('/graphql', bodyParser.json(), graphqlExpress({
-  schema
+      let _data =books.find((item)=>{
+
+        return item.id==id
+      })
+
+      let r =  Object.assign({},_data,{msg:_data.id});
+      return r
+    }
+  },
+  Msg:{
+    content:function(_r,book){
+      var p = messages.find((_item)=>{
+        return _item.bid == _r
+      })
+      return p.content
+    },
+    id:function(_r){
+      var p = messages.find((_item) => {
+        return _item.bid == _r
+      })
+      return p.id
+    
+    }
+  }
+};
+
+// Put together a schema
+const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers,
+});
+
+// Initialize the app
+const app = express();
+
+// The GraphQL endpoint
+app.use('/graphql', bodyParser.json(), graphqlExpress((req)=>{
+
+    return {
+      schema:schema,
+      context: {
+        username:"zhengqiangzi"
+      }
+    }
 }));
 
-server.use('/graphiql', graphiqlExpress({
-  endpointURL: '/graphql',
-  subscriptionsEndpoint: `ws://localhost:${PORT}/subscriptions`
-}));
+// GraphiQL, a visual editor for queries
+app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 
-// Wrap the Express server
-const ws = createServer(server);
-ws.listen(PORT, () => {
-  console.log(`Apollo Server is now running on http://localhost:${PORT}`);
-  // Set up the WebSocket for handling GraphQL subscriptions
-  new SubscriptionServer({
-    execute,
-    subscribe,
-    schema
-  }, {
-      server: ws,
-      path: '/subscriptions',
-    });
+// Start the server
+app.listen(3000, () => {
+  console.log('Go to http://localhost:3000/graphiql to run queries!');
 });

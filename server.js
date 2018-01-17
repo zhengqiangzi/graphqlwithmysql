@@ -30,10 +30,6 @@ const {books,messages,authors }= (()=>{
   }
   return { books: _books, authors: _authors, messages:_messages}
 })()
-
-
-
-
 // The GraphQL schema in string form
 const typeDefs = `
   type Book {
@@ -54,7 +50,13 @@ const typeDefs = `
       book(id:Int!): Book,
       books(pnu:Int,psize:Int):[Book]
    }
+   type Mutation{
+
+      addBook(title:String!,author:String!,msg:String!):Book
+   }
 `;
+
+let base_id=102
 // The resolvers
 const resolvers = {
   Query: { 
@@ -68,7 +70,7 @@ const resolvers = {
         if(pnu){
           let g = _.chunk(books,psize)
           return g[pnu-1]
-        }
+        } 
         return books
     }
   },
@@ -93,11 +95,38 @@ const resolvers = {
       })
       return r.id
     },
-    name:function(_){
+    name:function(_,args,context){
+      /**
+       * context 服务器传回的相伴信息
+        console.log(context.username)
+      */
+
       let r = authors.find((item) => {
         return item.id == _
       })
-      return r.name
+      return r.name +'--->'+ context.username.toUpperCase()
+    }
+  },
+  Mutation:{
+    addBook:(_,{title,msg,author})=>{
+      let k = {
+        id: base_id,
+        title: title,
+        author: base_id,
+        msg: base_id
+      }
+      books.unshift(k)
+      authors.unshift({
+        id: base_id,
+        name:author
+      })
+      messages.unshift({
+        id: base_id,
+        content:msg,
+      })
+      base_id++;
+
+      return k
     }
   }
 };
@@ -113,7 +142,7 @@ app.use('/graphql', bodyParser.json(), graphqlExpress((req)=>{
     return {
       schema:schema,
       context: {
-        username:"zhengqiangzi"
+        username:"zhengqiangzi"//字段resolve中 function第三个参数可以读取此处内容 
       }
     }
 }));

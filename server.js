@@ -10,78 +10,99 @@ const books = [
   {
     id:1,
     title: "Harry Potter and the Sorcerer's stone",
-    author: 'J.K. Rowling',
+    author: 1,
+    msg:1
   },
   {
     id:2,
     title: 'Jurassic Park',
-    author: 'Michael Crichton',
+    author: 2,
+    msg:2
   },
 ];
 
 const messages=[
-    {id:3,bid:1,content:"this is good books"},
-    {id:4,bid:2,content:"this is good books2"}
+    {id:1,content:"this is good books"},
+    {id:2,content:"this is good books2"}
+]
+
+const authors=[
+  { id:1,name:"author1"},
+  { id:2,name:"author2"}
 ]
 // The GraphQL schema in string form
 const typeDefs = `
   type Book {
     id:Int
     title:String
-    author:String
+    author:Author
     msg:Msg
   }
   type Msg {
     content:String
     id:Int
   }
+  type Author {
+    id:Int
+    name:String
+  }
   type Query {
       book(id:Int!): Book,
+      books:[Book]
    }
 `;
 // The resolvers
 const resolvers = {
   Query: { 
     book:function(_book,{id}){
-
       let _data =books.find((item)=>{
-
         return item.id==id
-      })
-
-      let r =  Object.assign({},_data,{msg:_data.id});
-      return r
+      });
+      return _data
+    },
+    books:function(){
+        return books
     }
   },
   Msg:{
     content:function(_r,book){
-      var p = messages.find((_item)=>{
-        return _item.bid == _r
-      })
-      return p.content
+      var r =  messages.find((item)=>{
+          return _r==item.id
+        })
+        return r.content
     },
     id:function(_r){
-      var p = messages.find((_item) => {
-        return _item.bid == _r
+      var r = messages.find((item) => {
+        return _r == item.id
       })
-      return p.id
-    
+      return r.id
+
+    }
+  },
+  Author:{
+    id:function(_){
+     let r =  authors.find((item)=>{
+        return item.id==_
+      })
+      return r.id
+    },
+    name:function(_){
+      let r = authors.find((item) => {
+        return item.id == _
+      })
+      return r.name
     }
   }
 };
-
 // Put together a schema
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
 });
-
 // Initialize the app
 const app = express();
-
 // The GraphQL endpoint
 app.use('/graphql', bodyParser.json(), graphqlExpress((req)=>{
-
     return {
       schema:schema,
       context: {
@@ -89,10 +110,8 @@ app.use('/graphql', bodyParser.json(), graphqlExpress((req)=>{
       }
     }
 }));
-
 // GraphiQL, a visual editor for queries
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
-
 // Start the server
 app.listen(3000, () => {
   console.log('Go to http://localhost:3000/graphiql to run queries!');

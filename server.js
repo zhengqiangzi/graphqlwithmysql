@@ -2,34 +2,38 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 const { makeExecutableSchema } = require('graphql-tools');
-
 import _ from "lodash";
+import Faker from 'faker';
 
-// Some fake data
-const books = [
+
+const {books,messages,authors }= (()=>{
+  let _books=[]
+  let _messages=[]
+  let _authors=[]
+  for(var i=1;i<=100;i++)
   {
-    id:1,
-    title: "Harry Potter and the Sorcerer's stone",
-    author: 1,
-    msg:1
-  },
-  {
-    id:2,
-    title: 'Jurassic Park',
-    author: 2,
-    msg:2
-  },
-];
+    let _book_title = Faker.name.jobTitle()
+    _books.push({
+        id : i,
+        title: _book_title,
+        author:i,
+        msg:i
+    })
+    _messages.push({
+      id:i,
+      content: `messages about ${_book_title}`
+    })
+    _authors.push({
+      id:i,
+      name:Faker.name.firstName()
+    })
+  }
+  return { books: _books, authors: _authors, messages:_messages}
+})()
 
-const messages=[
-    {id:1,content:"this is good books"},
-    {id:2,content:"this is good books2"}
-]
 
-const authors=[
-  { id:1,name:"author1"},
-  { id:2,name:"author2"}
-]
+
+
 // The GraphQL schema in string form
 const typeDefs = `
   type Book {
@@ -48,7 +52,7 @@ const typeDefs = `
   }
   type Query {
       book(id:Int!): Book,
-      books:[Book]
+      books(pnu:Int,psize:Int):[Book]
    }
 `;
 // The resolvers
@@ -60,7 +64,11 @@ const resolvers = {
       });
       return _data
     },
-    books:function(){
+    books:function(root,{pnu,psize}){
+        if(pnu){
+          let g = _.chunk(books,psize)
+          return g[pnu-1]
+        }
         return books
     }
   },
@@ -76,7 +84,6 @@ const resolvers = {
         return _r == item.id
       })
       return r.id
-
     }
   },
   Author:{

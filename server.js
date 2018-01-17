@@ -4,6 +4,7 @@ const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 const { makeExecutableSchema } = require('graphql-tools');
 import _ from "lodash";
 import Faker from 'faker';
+import { combineResolvers } from 'graphql-resolvers'
 
 
 const {books,messages,authors }= (()=>{
@@ -21,7 +22,7 @@ const {books,messages,authors }= (()=>{
     })
     _messages.push({
       id:i,
-      content: `messages about ${_book_title}`
+      content: Faker.lorem.paragraphs()
     })
     _authors.push({
       id:i,
@@ -38,6 +39,10 @@ const {books,messages,authors }= (()=>{
 const typeDefs = `
   type Book {
     id:Int
+     """
+      Description for field
+      Supports multi-line description
+    """
     title:String
     author:Author
     msg:Msg
@@ -52,10 +57,39 @@ const typeDefs = `
   }
   type Query {
       book(id:Int!): Book,
-      books(pnu:Int,psize:Int):[Book]
+      books(pnu:Int,psize:Int):[Book],
+      userInfo:User
+   }
+   type User{
+       username:String,
+       id:String,
+       code:Int
+      
    }
 `;
 // The resolvers
+const isLoggined = (root, args, context, info) => {
+
+     if(Math.random()>0.5){
+       return {
+         code:200,
+         username:Faker.name.firstName(),
+         id: Faker.random.uuid()
+       }
+     }
+    // return new Error('error')
+}
+const notLoggined = (root, args, context, info) => {
+
+  return {
+        code:400,
+        username:null,
+        id:null,
+
+  }
+
+}
+
 const resolvers = {
   Query: { 
     book:function(_book,{id}){
@@ -70,7 +104,8 @@ const resolvers = {
           return g[pnu-1]
         }
         return books
-    }
+    },
+    userInfo: combineResolvers(isLoggined, notLoggined)
   },
   Msg:{
     content:function(_r,book){
@@ -93,7 +128,8 @@ const resolvers = {
       })
       return r.id
     },
-    name:function(_){
+    name:function(_,args,context,info){
+
       let r = authors.find((item) => {
         return item.id == _
       })

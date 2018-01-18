@@ -100,7 +100,6 @@ const resolvers = {
        * context 服务器传回的相伴信息
         console.log(context.username)
       */
-
       let r = authors.find((item) => {
         return item.id == _
       })

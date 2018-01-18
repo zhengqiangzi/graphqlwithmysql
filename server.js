@@ -10,23 +10,25 @@ const {books,messages,authors }= (()=>{
   let _books=[]
   let _messages=[]
   let _authors=[]
+  var j=101;
   for(var i=1;i<=100;i++)
   {
     let _book_title = Faker.name.jobTitle()
     _books.push({
         id : i,
         title: _book_title,
-        author:i,
-        msg:i
+        author:j,
+        msg:j
     })
     _messages.push({
-      id:i,
+      id:j,
       content: `messages about ${_book_title}`
     })
     _authors.push({
-      id:i,
+      id:j,
       name:Faker.name.firstName()
     })
+    j++;
   }
   return { books: _books, authors: _authors, messages:_messages}
 })()

@@ -14,9 +14,18 @@
                 query : gql`query($id:Int!){ book(id: $id) { id title author} } `,
                 variables(){
                     return {
-                        id:this.$route.query.id
+                        id:this.$route.query.id || 1
                     }
-                }
+                },
+                update:function(){
+
+                },
+                result:function(){
+                    console.log('-----------------------------result--------------------------')
+                    console.log(arguments)
+                    console.log('-----------------------------result--------------------------')
+                },
+            //   pollInterval: 3000, // ms
             }
         },
         data:function(){

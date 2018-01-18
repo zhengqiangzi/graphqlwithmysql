@@ -10,6 +10,34 @@ import {
 } from 'graphql'
 import DB from "./DB.js";
 import Faker from "faker";
+import {GraphQLDirective } from "graphql/type/directives";
+import {DirectiveLocation} from 'graphql/language/directiveLocation';
+
+
+const InstrumentDirective = new GraphQLDirective({
+	name: 'instrument',
+	description:'Instrument the time it takes to resolve the field',
+	locations: [
+		DirectiveLocation.FIELD,
+	],
+	args: {
+		tag: {
+			type: new GraphQLNonNull(GraphQLString),
+			description: 'A tag to store in the metrics store'
+		}
+	},
+	resolve(resolve, source, { as }) {
+		return resolve().then(input => {
+			/* const format = as || DEFAULT_CURRENCY_FORMAT;
+			if (format.indexOf('0') !== -1 && !Number.isNaN(Number(input))) {
+				return numeral(input).format(format) || input;
+			} */
+			return 'aaaaa';
+		});
+	}
+});
+
+
 var Person = new GraphQLObjectType({
     name:"Person",
     description:"Person",
@@ -248,9 +276,17 @@ var Subscription  = new GraphQLObjectType({
 	}
 
 })
- export default new GraphQLSchema({
-	 query:Query,
-	 mutation:mutations,
-	subscription: Subscription
+
+let schema = new GraphQLSchema({
+	query:Query,
+	mutation:mutations,
+	subscription: Subscription,
+	directives: [InstrumentDirective]
 	
 })
+
+
+export default schema
+
+
+console.log(schema._queryType._fields.person)

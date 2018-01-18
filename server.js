@@ -51,7 +51,6 @@ const typeDefs = `
       books(pnu:Int,psize:Int):[Book]
    }
    type Mutation{
-
       addBook(title:String!,author:String!,msg:String!):Book
    }
 `;

@@ -17,14 +17,14 @@
                         id:this.$route.query.id || 1
                     }
                 },
-                update:function(){
+               /* update:function(){
 
                 },
                 result:function(){
                     console.log('-----------------------------result--------------------------')
                     console.log(arguments)
                     console.log('-----------------------------result--------------------------')
-                },
+                },*/
             //   pollInterval: 3000, // ms
             }
         },
